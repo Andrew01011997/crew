@@ -8,7 +8,7 @@ interface InputProps {
   value: string
 }
 
-function Input (props: InputProps) {
+function Input(props: InputProps) {
   return <div className='settingInput'>
     <label>
       <span className={props.job}>{props.job}</span>
@@ -24,7 +24,7 @@ function Input (props: InputProps) {
   </div>
 }
 
-function SettingsPage (props: {}) {
+function SettingsPage(props: {}) {
   const [isLoading, setIsLoading] = useState(true)
   const [medic, setMedic] = useState('')
   const [engineer, setEngineer] = useState('')
@@ -42,12 +42,30 @@ function SettingsPage (props: {}) {
     return unsub
   }, [])
 
-  function handleSubmit () {
-    settingsService.setJobSplit({
-      medic: parseInt(medic),
-      engineer: parseInt(engineer),
-      pilot: parseInt(pilot),
-    })
+  function handleSubmit() {
+    
+    if(isCorrect([medic, engineer, pilot]))
+      settingsService.setJobSplit({
+        medic: parseInt(medic),
+        engineer: parseInt(engineer),
+        pilot: parseInt(pilot),
+      })
+      else console.log("no correct")
+  }
+
+  function isCorrect(params: any){
+    let summ = 0
+    for(let i = 0; i<params.length; i++){
+      if(isNaN(params[i]))
+        return false
+      if(parseInt(params[i]) < parseFloat(params[i]))
+        return false
+      summ+=parseInt(params[i])
+    }
+    if(summ>100)
+      return false
+
+    return true;
   }
 
   if (isLoading) {

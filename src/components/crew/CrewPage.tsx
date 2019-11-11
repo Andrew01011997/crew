@@ -13,12 +13,20 @@ function CrewPage(props: {}) {
     const needMedic = crews.filter(elem => elem.job === Job.medic).length / needJob.medic
     const needPilot = crews.filter(elem => elem.job === Job.pilot).length / needJob.pilot
     const needEngineer = crews.filter(elem => elem.job === Job.engineer).length / needJob.engineer;
+    const freePeoples = 100 - needJob.medic - needJob.pilot - needJob.engineer;
+    const needRest = crews.filter(elem => elem.job === Job.unassigned).length / freePeoples;
 
-    if(needEngineer > needMedic){
-      return needMedic>needPilot? 1:2
+    if(needMedic < needPilot){
+      if(needEngineer < needRest)
+        return needEngineer>needMedic?2:3
+      else
+        return  needRest>needMedic?2:4
     }
     else{
-      return needEngineer>needPilot? 1:3
+      if(needEngineer < needRest)
+        return needEngineer>needPilot?1:3
+      else
+        return  needRest>needPilot?1:4
     }
 
   }
@@ -28,7 +36,8 @@ function CrewPage(props: {}) {
       const unsub = crewService.onMemberAdded(
         (member) => {
           const jobType = getJob(member, crew, settingsService.getJobSplit())
-          crewService.assignJob(member.id, jobType==1?Job.pilot:jobType==2?Job.medic:Job.engineer)
+          if(jobType!=4)
+            crewService.assignJob(member.id, jobType==1?Job.pilot:jobType==2?Job.medic:Job.engineer)
           setNeed(true)
         }
       )
@@ -45,3 +54,5 @@ function CrewPage(props: {}) {
 }
 
 export default CrewPage
+
+
